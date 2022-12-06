@@ -15,15 +15,15 @@ public class SecurityFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         JwtAuthenticationToken principal = (JwtAuthenticationToken) ((HttpServletRequest) request).getUserPrincipal();
-        String username = principal.getToken().getClaimAsString("preferred_username");
-        if (principal != null) {
-            if (username.endsWith("@test.com")) {
+        if(principal!=null) {
+            String username = principal.getToken().getClaimAsString("preferred_username");
+            // if domain end with test.com then it will frorward request to handler otherwise it will throw unauthorised exception
+            if (username != null && username.endsWith("@test.com")) {
                 chain.doFilter(request, response);
             } else {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Domain is not validate");
+                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Domain is not valid");
             }
         }
-
     }
 }
 
